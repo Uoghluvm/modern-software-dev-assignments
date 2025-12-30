@@ -87,3 +87,87 @@ def _looks_imperative(sentence: str) -> bool:
         "investigate",
     }
     return first.lower() in imperative_starters
+
+
+# TODO 1: LLM-powered extraction using Ollama
+# Import Pydantic for structured outputs
+from pydantic import BaseModel
+
+
+class ActionItemsResponse(BaseModel):
+    """Pydantic model for structured output from Ollama."""
+    action_items: List[str]
+
+
+def extract_action_items_llm(text: str, model: str = "llama3.1:8b") -> List[str]:
+    """
+    Extract action items from text using an LLM (Ollama).
+    
+    This function uses Ollama's structured output capability to ensure
+    the LLM returns a JSON array of action items.
+    
+    Args:
+        text: The input notes/text to extract action items from
+        model: The Ollama model to use (default: llama3.1:8b)
+    
+    Returns:
+        A list of extracted action item strings
+    """
+    if not text or not text.strip():
+        return []
+    
+    # System prompt to guide the LLM
+    system_prompt = """You are an AI assistant that extracts action items from free-form notes.
+Your task is to:
+1. Identify all actionable tasks, to-dos, and action items in the provided text
+2. Extract them as clear, concise action items
+3. Remove bullet points, checkboxes, or prefixes like "TODO:", "Action:", etc.
+4. Return only the core action item text
+5. If there are no action items, return an empty list
+
+Examples:
+- "- [ ] Buy groceries" → "Buy groceries"
+- "TODO: Call the dentist" → "Call the dentist"
+- "Need to finish the report by Friday" → "Finish the report by Friday"
+"""
+    
+    try:
+        # Use Ollama chat with structured output
+        response = chat(
+            model=model,
+            messages=[
+                {
+                    'role': 'system',
+                    'content': system_prompt
+                },
+                {
+                    'role': 'user',
+                    'content': f"Extract all action items from the following notes:\n\n{text}"
+                }
+            ],
+            format=ActionItemsResponse.model_json_schema(),  # Structured output
+        )
+        
+        # Parse the response
+        message_content = response.message.content
+        
+        # Parse JSON response
+        result = json.loads(message_content)
+        action_items = result.get('action_items', [])
+        
+        # Deduplicate while preserving order
+        seen: set[str] = set()
+        unique: List[str] = []
+        for item in action_items:
+            item_stripped = item.strip()
+            lowered = item_stripped.lower()
+            if lowered and lowered not in seen:
+                seen.add(lowered)
+                unique.append(item_stripped)
+        
+        return unique
+        
+    except Exception as e:
+        # Fallback to rule-based extraction on error
+        print(f"LLM extraction failed: {e}. Falling back to rule-based extraction.")
+        return extract_action_items(text)
