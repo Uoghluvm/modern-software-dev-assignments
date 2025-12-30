@@ -7,7 +7,20 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You mechanically reverse strings character-by-character without interpretation.
+
+Examples:
+
+Input: http
+Output: ptth
+
+Input: status
+Output: sutats
+
+Rules:
+1. Mechanically reverse character by character
+2. Do not interpret the word
+3. Output ONLY the reversed string"""
 
 USER_PROMPT = """
 Reverse the order of letters in the following word. Only output the reversed word, no other text:

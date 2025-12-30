@@ -37,7 +37,16 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You are a helpful Python coding assistant. 
+
+When provided with context (such as API documentation), you must:
+1. Read and understand the provided context carefully
+2. Use ONLY the information from the context to complete the task
+3. Follow the documented API endpoints, authentication methods, and data formats exactly
+4. Write clean, working Python code with proper error handling
+5. Include all necessary imports
+
+Do not make assumptions beyond what is documented in the context."""
 
 
 # For this simple example
@@ -56,7 +65,8 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    # Return all corpus documents (in this case, the API documentation)
+    return corpus
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:

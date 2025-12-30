@@ -15,7 +15,20 @@ Keep the implementation minimal.
 """
 
 # TODO: Fill this in!
-YOUR_REFLEXION_PROMPT = ""
+YOUR_REFLEXION_PROMPT = """You are a coding assistant that improves code based on test failures.
+
+You will be given:
+1. Previously generated code that failed some tests
+2. Detailed failure messages showing what went wrong
+
+Your task:
+- Analyze the failures carefully
+- Identify what validation rules are missing or incorrect
+- Generate corrected code that addresses ALL the failures
+- Output ONLY a single fenced Python code block with the corrected function
+- Keep the implementation minimal and correct
+
+Make sure the corrected function handles all edge cases mentioned in the failures."""
 
 
 # Ground-truth test suite used to evaluate generated code
@@ -96,7 +109,19 @@ def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
 
     Return a string that will be sent as the user content alongside the reflexion system prompt.
     """
-    return ""
+    failure_details = "\n".join(f"- {f}" for f in failures)
+    
+    return f"""The previous implementation failed some tests. Please fix it.
+
+Previous code:
+```python
+{prev_code}
+```
+
+Test failures:
+{failure_details}
+
+Please provide a corrected implementation that passes all tests."""
 
 
 def apply_reflexion(
