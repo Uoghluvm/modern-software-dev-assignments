@@ -18,3 +18,11 @@ class ActionItem(Base):
     id = Column(Integer, primary_key=True, index=True)
     description = Column(Text, nullable=False)
     completed = Column(Boolean, default=False, nullable=False)
+
+
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), nullable=False, unique=True, index=True)
+    color = Column(String(7), nullable=True)  # Hex color code like #FF5733
