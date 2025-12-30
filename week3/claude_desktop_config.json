@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "weather": {
+      "command": "poetry",
+      "args": ["run", "python", "-m", "week3.server.main"],
+      "cwd": "/Users/thg/modern-software-dev-assignments",
+      "env": {
+        "OPENWEATHER_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
